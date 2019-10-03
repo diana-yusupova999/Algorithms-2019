@@ -1,6 +1,11 @@
 package lesson1;
 
-import kotlin.NotImplementedError;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -34,8 +39,38 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortTimes(String inputName, String outputName) {
-        throw new NotImplementedError();
+    static public void sortTimes(String inputName, String outputName) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(inputName));
+        PrintWriter writer = new PrintWriter(new File(outputName));
+
+        ArrayList<String> list1 = new ArrayList<>();
+        ArrayList<String> list2 = new ArrayList<>();
+        while (scanner.hasNextLine()) {
+            String time = scanner.next();
+            String s = scanner.next();
+            scanner.nextLine();
+
+            if(time.startsWith("12")){
+                time = "00" + time.substring(2);
+            }
+
+            if (s.equals("AM")) {
+                list1.add(time + " " + s);
+            } else {
+                list2.add(time + " " + s);
+            }
+        }
+        Collections.sort(list1);
+        Collections.sort(list2);
+        list1.addAll(list2);
+
+        for (String s : list1) {
+            if(s.startsWith("00")){
+                s = "12" + s.substring(2);
+            }
+            writer.println(s);
+        }
+        writer.close();
     }
 
     /**
@@ -65,6 +100,7 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
     static public void sortAddresses(String inputName, String outputName) {
+
 
     }
 
@@ -99,7 +135,7 @@ public class JavaTasks {
      * 121.3
      */
     static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+
     }
 
     /**
@@ -132,7 +168,7 @@ public class JavaTasks {
      * 2
      */
     static public void sortSequence(String inputName, String outputName) {
-        throw new NotImplementedError();
+
     }
 
     /**

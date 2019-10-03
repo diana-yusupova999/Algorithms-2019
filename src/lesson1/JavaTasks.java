@@ -3,9 +3,7 @@ package lesson1;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Scanner;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -39,18 +37,21 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
+    // асимптотика О(nlogn)
     static public void sortTimes(String inputName, String outputName) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(inputName));
         PrintWriter writer = new PrintWriter(new File(outputName));
 
         ArrayList<String> list1 = new ArrayList<>();
         ArrayList<String> list2 = new ArrayList<>();
+
+        // O(N)
         while (scanner.hasNextLine()) {
             String time = scanner.next();
             String s = scanner.next();
             scanner.nextLine();
 
-            if(time.startsWith("12")){
+            if (time.startsWith("12")) {
                 time = "00" + time.substring(2);
             }
 
@@ -60,12 +61,13 @@ public class JavaTasks {
                 list2.add(time + " " + s);
             }
         }
-        Collections.sort(list1);
+        Collections.sort(list1);// O(nlogn)
         Collections.sort(list2);
-        list1.addAll(list2);
+        list1.addAll(list2);// O(n)
 
+        // O(n)
         for (String s : list1) {
-            if(s.startsWith("00")){
+            if (s.startsWith("00")) {
                 s = "12" + s.substring(2);
             }
             writer.println(s);
@@ -99,9 +101,35 @@ public class JavaTasks {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortAddresses(String inputName, String outputName) {
+    //O(nlogn)
+    static public void sortAddresses(String inputName, String outputName) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(inputName));
+        PrintWriter writer = new PrintWriter(new File(outputName));
+        List<String[]> list = new ArrayList<>();
+        while (scanner.hasNext()) {
+            String[] person = new String[3];
+            for (int i = 0; i < person.length; i++) {
+                person[i] = scanner.next();
+                if (i == 0) {
+                    person[i] += scanner.next();
+                    scanner.next();
+                }
+            }
+            list.add(person);
+        }
 
+        list.sort(new Comparator<String[]>() {
+            @Override
+            public int compare(String[] o1, String[] o2) {
+                int compareStreet = o1[1].compareTo(o2[1]);
+                return compareStreet == 0 ? o1[2].compareTo(o2[2]) : compareStreet;
+            }
+        });
 
+        for (String[] person : list) {
+            writer.println(person[1] + " " + person[2] + " - " + person[0]);
+        }
+        writer.close();
     }
 
     /**
@@ -134,8 +162,21 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    static public void sortTemperatures(String inputName, String outputName) {
-
+    //O(nlogn)
+    static public void sortTemperatures(String inputName, String outputName) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(inputName));
+        PrintWriter writer = new PrintWriter(new File(outputName));
+        List<Double> list = new ArrayList<>();
+        while (scanner.hasNext()) {
+            String s = scanner.next();
+            double t = Double.parseDouble(s);
+            list.add(t);
+        }
+        Collections.sort(list);
+        for (double temp : list) {
+            writer.println(temp);
+        }
+        writer.close();
     }
 
     /**
@@ -167,8 +208,46 @@ public class JavaTasks {
      * 2
      * 2
      */
-    static public void sortSequence(String inputName, String outputName) {
+    //O(nlogn)
+    static public void sortSequence(String inputName, String outputName) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(inputName));
+        PrintWriter writer = new PrintWriter(new File(outputName));
+        List<Integer> listTemp = new ArrayList<>();
+        List<Integer> list = new ArrayList<>();
+        while (scanner.hasNext()) {
+            String string = scanner.next();
+            int x = Integer.parseInt(string);
+            listTemp.add(x);
+            list.add(x);
+        }
+        listTemp.sort((i1, i2) -> -Integer.compare(i1, i2));
 
+        int maxCount = 0;
+        int count = 0;
+        int curValue = 0;
+
+        for (int i = 0; i < listTemp.size() ; i++) {
+            count++;
+            if (i == listTemp.size() - 1 || !listTemp.get(i).equals(listTemp.get(i + 1))) {
+                maxCount = Math.max(maxCount, count);
+                if (maxCount == count) {
+                    curValue = listTemp.get(i);
+                }
+                count = 0;
+            }
+        }
+
+        int finalCurValue = curValue;
+        list.removeIf(x -> x == finalCurValue);
+
+        for (int i : list) {
+            writer.println(i);
+        }
+        for (int i = 0; i < maxCount; i++) {
+            writer.println(curValue);
+        }
+
+        writer.close();
     }
 
     /**
@@ -185,6 +264,7 @@ public class JavaTasks {
      * <p>
      * Результат: second = [1 3 4 9 9 13 15 20 23 28]
      */
+    // асимптотика O(second.length) или O(n)
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
         int firstIndex = 0;
         int secondIndex = first.length;

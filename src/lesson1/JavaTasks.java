@@ -1,8 +1,7 @@
 package lesson1;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @SuppressWarnings("unused")
@@ -38,12 +37,13 @@ public class JavaTasks {
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
     // асимптотика О(nlogn)
+    // T(n)
     static public void sortTimes(String inputName, String outputName) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(inputName));
         PrintWriter writer = new PrintWriter(new File(outputName));
 
-        ArrayList<String> list1 = new ArrayList<>();
-        ArrayList<String> list2 = new ArrayList<>();
+        List<String> list1 = new ArrayList<>();
+        List<String> list2 = new ArrayList<>();
 
         // O(N)
         while (scanner.hasNextLine()) {
@@ -73,6 +73,7 @@ public class JavaTasks {
             writer.println(s);
         }
         writer.close();
+        scanner.close();
     }
 
     /**
@@ -100,36 +101,61 @@ public class JavaTasks {
      * Садовая 5 - Сидоров Петр, Сидорова Мария
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
+     * <p>
+     * Людей, живущих в одном доме, выводить через запятую по алфавиту
      */
-    //O(nlogn)
-    static public void sortAddresses(String inputName, String outputName) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(inputName));
-        PrintWriter writer = new PrintWriter(new File(outputName));
-        List<String[]> list = new ArrayList<>();
-        while (scanner.hasNext()) {
-            String[] person = new String[3];
-            for (int i = 0; i < person.length; i++) {
-                person[i] = scanner.next();
-                if (i == 0) {
-                    person[i] += scanner.next();
-                    scanner.next();
-                }
-            }
-            list.add(person);
-        }
 
-        list.sort(new Comparator<String[]>() {
+    //O(nlogn)
+    //T(n)
+    static public void sortAddresses(String inputName, String outputName) throws IOException {
+
+        Map<String, List<String>> map = new TreeMap<>(new Comparator<String>() {
             @Override
-            public int compare(String[] o1, String[] o2) {
-                int compareStreet = o1[1].compareTo(o2[1]);
-                return compareStreet == 0 ? o1[2].compareTo(o2[2]) : compareStreet;
+            public int compare(String o1, String o2) {
+                String[] add1 = o1.split(" ");
+                String[] add2 = o2.split(" ");
+
+                int compareStreet = add1[0].compareTo(add2[0]);
+                return compareStreet == 0 ? Integer.compare(Integer.parseInt(add1[1]), Integer.parseInt(add2[1])) : compareStreet;
             }
         });
 
-        for (String[] person : list) {
-            writer.println(person[1] + " " + person[2] + " - " + person[0]);
+        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName, StandardCharsets.UTF_8))) {
+            String line = scanner.readLine();
+            while (line != null && !line.isEmpty()) {
+
+                String[] words = line.split(" ");
+
+                String address = words[3] + " " + words[4];
+                List<String> persons = map.getOrDefault(address, new ArrayList<>());
+                persons.add(words[0] + " " + words[1]);
+                map.put(address, persons);
+
+                line = scanner.readLine();
+            }
         }
-        writer.close();
+
+        try (PrintWriter writer = new PrintWriter(new File(outputName), StandardCharsets.UTF_8)) {
+            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+
+                String address = entry.getKey();
+                List<String> persons = entry.getValue();
+
+                Collections.sort(persons);
+                writer.print(address + " - ");
+
+                Iterator<String> iterator = persons.iterator();
+                while (iterator.hasNext()) {
+                    String person = iterator.next();
+                    writer.print(person);
+                    if (iterator.hasNext()) {
+                        writer.print(", ");
+                    } else {
+                        writer.println();
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -162,21 +188,32 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
-    //O(nlogn)
+    //O(n)
+    //T(1)
     static public void sortTemperatures(String inputName, String outputName) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(inputName));
-        PrintWriter writer = new PrintWriter(new File(outputName));
-        List<Double> list = new ArrayList<>();
+
+        int[] temps = new int[7731];
         while (scanner.hasNext()) {
             String s = scanner.next();
             double t = Double.parseDouble(s);
-            list.add(t);
+            int tInt = (int) Math.round((t + 273) * 10);
+            temps[tInt]++;
         }
-        Collections.sort(list);
-        for (double temp : list) {
-            writer.println(temp);
+
+        try (PrintWriter writer = new PrintWriter(new File(outputName))) {
+            for (int t = 0; t < temps.length; t++) {
+                for (int i = 0; i < temps[t]; i++) {
+                    int tempWrite = t - 2730;
+                    if (tempWrite < 0) {
+                        writer.print("-");
+                    }
+                    tempWrite = Math.abs(tempWrite);
+
+                    writer.println(tempWrite / 10 + "." + tempWrite % 10);
+                }
+            }
         }
-        writer.close();
     }
 
     /**
@@ -208,46 +245,46 @@ public class JavaTasks {
      * 2
      * 2
      */
-    //O(nlogn)
-    static public void sortSequence(String inputName, String outputName) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(inputName));
-        PrintWriter writer = new PrintWriter(new File(outputName));
-        List<Integer> listTemp = new ArrayList<>();
+    //O(n)
+    //T(n)
+    static public void sortSequence(String inputName, String outputName) throws IOException {
         List<Integer> list = new ArrayList<>();
-        while (scanner.hasNext()) {
-            String string = scanner.next();
-            int x = Integer.parseInt(string);
-            listTemp.add(x);
-            list.add(x);
-        }
-        listTemp.sort((i1, i2) -> -Integer.compare(i1, i2));
+        Map<Integer, Integer> map = new HashMap<>();
 
-        int maxCount = 0;
-        int count = 0;
-        int curValue = 0;
-
-        for (int i = 0; i < listTemp.size() ; i++) {
-            count++;
-            if (i == listTemp.size() - 1 || !listTemp.get(i).equals(listTemp.get(i + 1))) {
-                maxCount = Math.max(maxCount, count);
-                if (maxCount == count) {
-                    curValue = listTemp.get(i);
-                }
-                count = 0;
+        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName))) {
+            String line = scanner.readLine();
+            while (line != null && !line.isEmpty()) {
+                int x = Integer.parseInt(line);
+                map.put(x, map.getOrDefault(x, 0) + 1);
+                list.add(x);
+                line = scanner.readLine();
             }
         }
 
-        int finalCurValue = curValue;
+        int maxValue = -1;
+        int minKey = 0;
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            int value = entry.getValue();
+            if (value > maxValue) {
+                minKey = entry.getKey();
+                maxValue = value;
+            } else if (value == maxValue) {
+                minKey = Math.min(entry.getKey(), minKey);
+            }
+        }
+
+        int finalCurValue = minKey;
         list.removeIf(x -> x == finalCurValue);
 
-        for (int i : list) {
-            writer.println(i);
-        }
-        for (int i = 0; i < maxCount; i++) {
-            writer.println(curValue);
+        for (int i = 0; i < maxValue; i++) {
+            list.add(minKey);
         }
 
-        writer.close();
+        try (PrintWriter writer = new PrintWriter(new File(outputName))) {
+            for (int i : list) {
+                writer.println(i);
+            }
+        }
     }
 
     /**
@@ -265,6 +302,7 @@ public class JavaTasks {
      * Результат: second = [1 3 4 9 9 13 15 20 23 28]
      */
     // асимптотика O(second.length) или O(n)
+    // T(second.length)
     static <T extends Comparable<T>> void mergeArrays(T[] first, T[] second) {
         int firstIndex = 0;
         int secondIndex = first.length;

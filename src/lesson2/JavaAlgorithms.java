@@ -41,20 +41,18 @@ public class JavaAlgorithms {
         Scanner scanner = new Scanner(new File(inputName));
         // PrintWriter writer = new PrintWriter(new File(outputName));
         List<Integer> list = new ArrayList<>();
-        int buy; // для переменной которая фиксирует продажу сделаем ильтерацию
+        int buy = 0; // для переменной которая фиксирует продажу сделаем ильтерацию
         int sale;
         int profit = 0;
         int profitMax = 0;
-        int i = 0;
         while (scanner.hasNext()) {
             String s = scanner.next();
-            Integer p = Integer.parseInt(s);
+            int p = Integer.parseInt(s);
             list.add(p);
             System.out.println(s);
-            System.out.println(i);
-            i++;
         }
-        for (int j = 0; j < i; j++) {
+
+        for (int j = 0; j < list.size(); j++) {
             profit = list.get(j) - list.get(j + 1);
             if (profit > 0) {
                 profitMax = Math.max(profit, profitMax);
@@ -62,10 +60,8 @@ public class JavaAlgorithms {
                 sale = buy + 1;
             }
         }
-        //return ()???????
 
-        throw new NotImplementedError();
-
+        return new Pair<>(buy, ++buy);
     }
 
     /**
@@ -149,34 +145,34 @@ public class JavaAlgorithms {
      * Единица простым числом не считается.
      */
     static public int calcPrimesNumber(int limit) {
-        System.out.println("limit: " + limit);
-        int interval = 1;
-        int simple = 0;
-        int per;
+        int interval = 2;
+        int simple = 1;
+
         if (limit <= 1) {
             return 0;
-        } else {
-            System.out.println("-----else-----");
-            while (interval != limit) {
-                per = 0;
-                System.out.println("per: " + per);
-                for (int i = 2; i <= limit; i++) {
-                    System.out.println("i: " + i);
-                    if (interval % i == 0 && interval != i) {
-                        per++;
-                    }
-                    System.out.println("per after for: " + per);
-                }
-                if (per == 0) {
-                    simple++;
-                }
-                interval++;
-                System.out.println("simple: " + simple + "------" + "interval: " + interval);
+        }
 
+        if (limit == 2) {
+            return 1;
+        }
+
+
+        while (interval != limit) {
+            interval++;
+            boolean check = true;
+            for (int i = 2; i * i <= interval; i++) {
+                if (interval % i == 0) {
+                    check = false;
+                    break;
+                }
+            }
+
+            if (check) {
+                simple++;
             }
         }
+        
         return simple;
-        //throw new NotImplementedError();
     }
 
     /**

@@ -3,6 +3,9 @@ package lesson1;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -41,7 +44,6 @@ public class JavaTasks {
     static public void sortTimes(String inputName, String outputName) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(inputName));
         PrintWriter writer = new PrintWriter(new File(outputName));
-
         List<String> list1 = new ArrayList<>();
         List<String> list2 = new ArrayList<>();
 
@@ -50,16 +52,22 @@ public class JavaTasks {
             String time = scanner.next();
             String s = scanner.next();
             scanner.nextLine();
+            Pattern p = Pattern.compile("(0[1-9]:)|(1[0-1]:)[0-5][0-9]:[0-5][0-9]");
+            Matcher m = p.matcher(time);
 
             if (time.startsWith("12")) {
                 time = "00" + time.substring(2);
             }
 
-            if (s.equals("AM")) {
-                list1.add(time + " " + s);
-            } else {
-                list2.add(time + " " + s);
+            if(m.matches()) {
+                if (s.equals("AM")) {
+                    list1.add(time + " " + s);
+                } else {
+                    list2.add(time + " " + s);
+                }
+
             }
+
         }
         Collections.sort(list1);// O(nlogn)
         Collections.sort(list2);
@@ -197,8 +205,10 @@ public class JavaTasks {
         while (scanner.hasNext()) {
             String s = scanner.next();
             double t = Double.parseDouble(s);
-            int tInt = (int) Math.round((t + 273) * 10);
-            temps[tInt]++;
+            if (t <= 500.0 && t >= -273.0) {
+                int tInt = (int) Math.round((t + 273) * 10);
+                temps[tInt]++;
+            }
         }
 
         try (PrintWriter writer = new PrintWriter(new File(outputName))) {

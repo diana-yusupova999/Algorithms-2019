@@ -156,7 +156,6 @@ public class JavaAlgorithms {
             return 1;
         }
 
-
         while (interval != limit) {
             interval++;
             boolean check = true;
@@ -171,7 +170,7 @@ public class JavaAlgorithms {
                 simple++;
             }
         }
-        
+
         return simple;
     }
 

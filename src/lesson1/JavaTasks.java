@@ -128,7 +128,7 @@ public class JavaTasks {
             }
         });
 
-        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName, StandardCharsets.UTF_8))) {
+        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName))) { //расширение StandardCharsets.UTF_8 добавила, т.к. в файл output выводились иероглифы
             String line = scanner.readLine();
             while (line != null && !line.isEmpty()) {
 

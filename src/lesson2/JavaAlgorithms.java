@@ -3,13 +3,12 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
 
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
@@ -37,32 +36,44 @@ public class JavaAlgorithms {
      * <p>
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
+    // O(n)
+    // T(n)
     static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws FileNotFoundException {
         Scanner scanner = new Scanner(new File(inputName));
-        // PrintWriter writer = new PrintWriter(new File(outputName));
         List<Integer> list = new ArrayList<>();
-        int buy = 0; // для переменной которая фиксирует продажу сделаем ильтерацию
-        int sale;
-        int profit = 0;
-        int profitMax = 0;
+
         while (scanner.hasNext()) {
-            String s = scanner.next();
-            int p = Integer.parseInt(s);
-            list.add(p);
-            System.out.println(s);
+            int x = scanner.nextInt();
+            list.add(x);
+        }
+        int n = list.size();
+        int[] postMax = new int[n];
+
+        postMax[n - 1] = list.get(n - 1);
+        for (int i = n - 2; i >= 0; i--) {
+            postMax[i] = Math.max(list.get(i), postMax[i + 1]);
         }
 
-        for (int j = 0; j < list.size(); j++) {
-            profit = list.get(j) - list.get(j + 1);
-            if (profit > 0) {
-                profitMax = Math.max(profit, profitMax);
-                buy = j + 1;
-                sale = buy + 1;
+        int max = 0;
+        int buyIndex = -1;
+        for (int i = 0; i < n - 1; i++) {
+            int value = postMax[i + 1] - list.get(i);
+            if (max < value) {
+                max = value;
+                buyIndex = i;
             }
         }
 
-        return new Pair<>(buy, ++buy);
+        int saleIndex = buyIndex + 1;
+        for (int i = buyIndex + 2; i < n; i++) {
+            if (list.get(i) > list.get(saleIndex)) {
+                saleIndex = i;
+            }
+        }
+
+        return new Pair<>(++buyIndex, ++saleIndex);
     }
+
 
     /**
      * Задача Иосифа Флафия.
@@ -113,10 +124,16 @@ public class JavaAlgorithms {
      * Общий комментарий: решение из Википедии для этой задачи принимается,
      * но приветствуется попытка решить её самостоятельно.
      */
+
+    // O(n)
+    // T(1)
     static public int josephTask(int menNumber, int choiceInterval) {
         // рекурсия
-
-        throw new NotImplementedError();
+        int res = 0;
+        for (int i = 1; i <= menNumber; ++i) {
+            res = (res + choiceInterval) % i;
+        }
+        return res + 1;
     }
 
     /**
@@ -130,8 +147,44 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+    // O(a.length^2)
+    // T(s1.length*s2.length)
+    static public String longestCommonSubstring(String s1, String s2) { // В этом алгоритме есть ошибка, которую не успела найти
+        if (s1.length() < s2.length()) {
+            String tmp = s1;
+            s1 = s2;
+            s2 = tmp;
+        }
+
+        int[][] a = new int[s1.length() + 1][s2.length() + 1];
+
+        for (int i = 1; i < a.length; i++) {
+            for (int j = 1; j < a[i].length; j++) {
+                if (s1.charAt(i) == s2.charAt(j)) {
+                    a[i][j] = a[i - 1][j - 1] + 1;
+                } else {
+                    a[i][j] = Math.max(a[i][j - 1], a[i - 1][j]);
+                }
+            }
+        }
+
+        int i = s1.length() - 1;
+        int j = s2.length() - 1;
+        final StringBuilder lcs = new StringBuilder();
+
+        while (i >= 0 && j >= 0) {
+            if (s1.charAt(i) == s1.charAt(j)) {
+                lcs.append(s1.charAt(i));
+                i--;
+                j--;
+            } else if (a[i - 1][j] > a[i][j - 1]) {
+                i--;
+            } else {
+                j--;
+            }
+        }
+
+        return lcs.reverse().toString();
     }
 
     /**
@@ -144,6 +197,8 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+    //O(n)
+    //T(n)
     static public int calcPrimesNumber(int limit) {
         int interval = 2;
         int simple = 1;
@@ -200,7 +255,103 @@ public class JavaAlgorithms {
      * В файле буквы разделены пробелами, строки -- переносами строк.
      * Остальные символы ни в файле, ни в словах не допускаются.
      */
-    static public Set<String> baldaSearcher(String inputName, Set<String> words) {
-        throw new NotImplementedError();
+
+    static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
+        List<char[]> lines = new ArrayList<>();
+        Map<Character, List<Point>> begins = new HashMap<>(100);
+
+        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName, StandardCharsets.UTF_8))) {
+            String line = scanner.readLine();
+            while (line != null && !line.isEmpty()) {
+                lines.add(line.replaceAll(" ", "").toCharArray());
+                line = scanner.readLine();
+            }
+        }
+
+        char[][] a = new char[lines.size()][];
+
+        for (int i = 0; i < a.length; i++) {
+            a[i] = lines.get(i);
+        }
+
+        int n = a.length;
+        if (n == 0) {
+            return new HashSet<>();
+        }
+        int m = a[0].length;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                List<Point> list = begins.getOrDefault(a[i][j], new ArrayList<>());
+                list.add(new Point(i, j));
+                begins.put(a[i][j], list);
+            }
+        }
+
+        final Set<String> result = new HashSet<>(words.size() << 1);
+
+        for (String word : words) {
+            for (Point p : begins.getOrDefault(word.charAt(0), new ArrayList<>())) {
+                if (dfs(a, new HashSet<>(), p, word, new StringBuilder())) {
+                    result.add(word);
+                    break;
+                }
+            }
+        }
+
+        return result;
     }
+
+    static final Point[] dpoints = {
+            new Point(-1, 0),
+            new Point(1, 0),
+            new Point(0, -1),
+            new Point(0, 1)
+    };
+
+
+    private static boolean dfs(char[][] graph, HashSet<Point> used, Point p, String searchWord, StringBuilder word) {
+        if (used.contains(p)) {
+            return false;
+        }
+
+        if (!searchWord.contains(graph[p.x][p.y] + "")) {
+            used.add(p);
+            return false;
+        }
+
+        word.append(graph[p.x][p.y]);
+        if (word.length() == searchWord.length() && word.toString().equals(searchWord)) {
+            return true;
+        }
+
+        if (word.length() >= searchWord.length()) {
+            return false;
+        }
+
+        if (!searchWord.startsWith(word.toString())) {
+            return false;
+        }
+
+        for (Point dp : dpoints) {
+            Point nextPoint = new Point(p.x + dp.x, p.y + dp.y);
+            if (isGoodPoint(graph, nextPoint) && dfs(graph, used, nextPoint, searchWord, new StringBuilder(word))) {
+                used.add(p);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean isGoodPoint(char[][] a, Point p) {
+        if (a.length == 0) {
+            return false;
+        }
+        return p.x >= 0 && p.y >= 0 && p.x < a.length && p.y < a[0].length;
+    }
+
 }
+
+
+

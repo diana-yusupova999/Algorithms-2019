@@ -1,9 +1,6 @@
 package lesson2;
 
-import kotlin.NotImplementedError;
 import kotlin.Pair;
-
-import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -128,7 +125,6 @@ public class JavaAlgorithms {
     // O(n)
     // T(1)
     static public int josephTask(int menNumber, int choiceInterval) {
-        // рекурсия
         int res = 0;
         for (int i = 1; i <= menNumber; ++i) {
             res = (res + choiceInterval) % i;
@@ -152,15 +148,15 @@ public class JavaAlgorithms {
     static public String longestCommonSubstring(String s1, String s2) { // В этом алгоритме есть ошибка, которую не успела найти
         if (s1.length() < s2.length()) {
             String tmp = s1;
-            s1 = s2;
+            s1 = s2; //?? for what?
             s2 = tmp;
-        }
+        } //зачем меня местами s1, s2
 
         int[][] a = new int[s1.length() + 1][s2.length() + 1];
 
-        for (int i = 1; i < a.length; i++) {
-            for (int j = 1; j < a[i].length; j++) {
-                if (s1.charAt(i) == s2.charAt(j)) {
+        for (int i = 1; i < s1.length() + 1; i++) {
+            for (int j = 1; j < s2.length() + 1; j++) {
+                if (s1.charAt(i) == s2.charAt(j)) { // в этой строке ошибка
                     a[i][j] = a[i - 1][j - 1] + 1;
                 } else {
                     a[i][j] = Math.max(a[i][j - 1], a[i - 1][j]);

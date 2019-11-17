@@ -10,7 +10,7 @@ import java.util.*;
 public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
     private static class Node<T> {
-        final T value;
+        T value;
 
         Node<T> left = null;
 
@@ -35,12 +35,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         Node<T> newNode = new Node<>(t);
         if (closest == null) {
             root = newNode;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             assert closest.left == null;
             closest.left = newNode;
-        }
-        else {
+        } else {
             assert closest.right == null;
             closest.right = newNode;
         }
@@ -95,12 +93,10 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
         int comparison = value.compareTo(start.value);
         if (comparison == 0) {
             return start;
-        }
-        else if (comparison < 0) {
+        } else if (comparison < 0) {
             if (start.left == null) return start;
             return find(start.left, value);
-        }
-        else {
+        } else {
             if (start.right == null) return start;
             return find(start.right, value);
         }
@@ -108,28 +104,57 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
 
     public class BinaryTreeIterator implements Iterator<T> {
 
+        private final Stack<Node<T>> stack;
+        private Node<T> prev;
+
         private BinaryTreeIterator() {
-            // Добавьте сюда инициализацию, если она необходима
+            stack = new Stack<>();
+            prev = null;
+
+            Node<T> current = root;
+            if (current != null) {
+                stack.add(current);
+                while (current.left != null) {
+                    current = current.left;
+                    stack.add(current);
+                }
+            }
         }
 
         /**
          * Проверка наличия следующего элемента
          * Средняя
+         *
+         * O(1) T(n)
          */
         @Override
         public boolean hasNext() {
-            // TODO
-            throw new NotImplementedError();
+            return !stack.empty();
         }
 
         /**
          * Поиск следующего элемента
          * Средняя
+         *
+         * O(1) T(n)
          */
         @Override
         public T next() {
-            // TODO
-            throw new NotImplementedError();
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            final Node<T> res = stack.pop();
+            if (res.right != null) {
+                Node<T> elem = res.right;
+                stack.add(elem);
+                while (elem.left != null) {
+                    stack.add(elem.left);
+                    elem = elem.left;
+                }
+            }
+            prev = res;
+            return (T) res.value;
         }
 
         /**
@@ -138,10 +163,46 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
          */
         @Override
         public void remove() {
-            // TODO
-            throw new NotImplementedError();
+            if (prev == null) {
+                throw new NoSuchElementException();
+            }
+
+            final Node<T> removableElem = prev;
+
+            if (removableElem.left == null && removableElem.right == null) {
+                swapWithDelete(removableElem, null);
+            } else if (removableElem.left != null && removableElem.right != null) {
+                Node<T> current = removableElem.right;
+                Node<T> parent = removableElem;
+                while (current.left != null) {
+                    parent = current;
+                    current = current.left;
+                }
+                parent.left = current.right;
+                removableElem.value = current.value;
+            } else if (removableElem.left == null) {
+                swapWithDelete(removableElem, removableElem.right);
+            } else {
+                swapWithDelete(removableElem, removableElem.left);
+            }
+            size--;
         }
+
+        private void swapWithDelete(Node<T> child, Node<T> aNewChild) {
+            if (!stack.empty()) {
+                Node<T> parent = stack.peek();
+                if (parent.right == child) {
+                    parent.right = aNewChild;
+                } else {
+                    parent.left = aNewChild;
+                }
+            } else {
+                root = aNewChild;
+            }
+        }
+
     }
+
 
     @NotNull
     @Override
@@ -175,23 +236,40 @@ public class BinaryTree<T extends Comparable<T>> extends AbstractSet<T> implemen
     /**
      * Найти множество всех элементов меньше заданного
      * Сложная
+     *
+     * O(n) T(n)
      */
     @NotNull
     @Override
     public SortedSet<T> headSet(T toElement) {
-        // TODO
-        throw new NotImplementedError();
+        final SortedSet<T> binaryTree = new BinaryTree<>();
+        for (T next : this) {
+            if (next.compareTo(toElement) < 0) {
+                binaryTree.add(next);
+            } else {
+                break;
+            }
+        }
+        return binaryTree;
     }
 
     /**
      * Найти множество всех элементов больше или равных заданного
      * Сложная
+     * O(n) T(n)
      */
     @NotNull
     @Override
     public SortedSet<T> tailSet(T fromElement) {
-        // TODO
-        throw new NotImplementedError();
+        final SortedSet<T> binaryTree = new BinaryTree<>();
+
+        for (T next : this) {
+            if (next.compareTo(fromElement) >= 0) {
+                binaryTree.add(next);
+            }
+        }
+
+        return binaryTree;
     }
 
     @Override

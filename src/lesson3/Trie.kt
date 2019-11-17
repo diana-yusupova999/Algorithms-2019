@@ -57,11 +57,26 @@ class Trie : AbstractMutableSet<String>(), MutableSet<String> {
         return false
     }
 
+    private fun find(node: Node, list: MutableList<String>, word: String) {
+        for (entry in node.children.entries) {
+            if (entry.key == ' ') {
+                list.add(word)
+            } else {
+                find(entry.value, list, word + entry.key)
+            }
+        }
+    }
+
     /**
      * Итератор для префиксного дерева
      * Сложная
+     *
+     * O(n) T(n)
      */
     override fun iterator(): MutableIterator<String> {
-        TODO()
+        val list = mutableListOf<String>()
+
+        find(root, list, "")
+        return list.iterator()
     }
 }

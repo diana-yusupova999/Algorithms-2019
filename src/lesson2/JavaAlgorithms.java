@@ -1,11 +1,21 @@
 package lesson2;
 
 import kotlin.Pair;
-import java.awt.*;
-import java.io.*;
+
+import java.awt.Point;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
@@ -36,8 +46,8 @@ public class JavaAlgorithms {
     // O(n)
     // T(n)
     static public Pair<Integer, Integer> optimizeBuyAndSell(String inputName) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(inputName));
-        List<Integer> list = new ArrayList<>();
+        final Scanner scanner = new Scanner(new File(inputName));
+        final List<Integer> list = new ArrayList<>();
 
         while (scanner.hasNext()) {
             int x = scanner.nextInt();
@@ -250,6 +260,9 @@ public class JavaAlgorithms {
      * Все слова и буквы -- русские или английские, прописные.
      * В файле буквы разделены пробелами, строки -- переносами строк.
      * Остальные символы ни в файле, ни в словах не допускаются.
+     *
+     * O(words.size() * avg(length(word)))
+     * T(n*m)
      */
 
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
@@ -346,7 +359,6 @@ public class JavaAlgorithms {
         }
         return p.x >= 0 && p.y >= 0 && p.x < a.length && p.y < a[0].length;
     }
-
 }
 
 

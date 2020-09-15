@@ -2,6 +2,9 @@ package lesson6;
 
 import kotlin.NotImplementedError;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -116,10 +119,34 @@ public class JavaDynamicTasks {
      *
      * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
      */
-    public static int shortestPathOnField(String inputName) {
-        throw new NotImplementedError();
+    private static int getIntegerValueByIndices(List<String> input, int i, int j) {
+        return Integer.parseInt(input.get(i).split(" ")[j]);
     }
 
-    // Задачу "Максимальное независимое множество вершин в графе без циклов"
-    // смотрите в уроке 5
+    public static int shortestPathOnField(String inputName) throws IOException {
+        String line;
+        List<String> input = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))){
+            while ((line = bufferedReader.readLine()) != null ){
+                input.add(line);
+            }
+        }
+        int length = input.get(0).split(" ").length;
+        int height = input.size();
+        int[][] requiredWay = new int [height][length];
+        requiredWay[0][0] = getIntegerValueByIndices(input, 0, 0);
+        for (int i = 1; i < height; i++) {
+            requiredWay[i][0] = getIntegerValueByIndices(input, i, 0) + requiredWay[i - 1][0];
+        }
+        for (int j = 1; j < length; j++) {
+            requiredWay[0][j] = requiredWay[0][j - 1] + getIntegerValueByIndices(input, 0, j);
+        }
+        for (int i = 1; i < height; i++) {
+            for (int j = 1; j < length; j++) {
+                requiredWay[i][j] = Math.min(requiredWay[i - 1][j - 1], Math.min(requiredWay[i][j - 1], requiredWay[i - 1][j]))
+                        + getIntegerValueByIndices(input, i, j);
+            }
+        }
+        return requiredWay[height - 1][length - 1];
+    }
 }

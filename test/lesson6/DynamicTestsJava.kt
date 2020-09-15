@@ -15,11 +15,16 @@ class DynamicTestsJava : AbstractDynamicTests() {
     @Tag("Hard")
     fun testLongestIncreasingSubSequence() {
         longestIncreasingSubSequence { JavaDynamicTasks.longestIncreasingSubSequence(it) }
+        belowZero { JavaDynamicTasks.longestIncreasingSubSequence(it) }
     }
 
     @Test
-    @Tag("Normal")
+    @Tag("Hard")
     fun testShortestPathOnField() {
         shortestPathOnField { JavaDynamicTasks.shortestPathOnField(it) }
+        zeroesField { JavaDynamicTasks.shortestPathOnField(it) }
+        decimalField { JavaDynamicTasks.shortestPathOnField(it) }
+        bigNumbers { JavaDynamicTasks.shortestPathOnField(it) }
     }
 }
+

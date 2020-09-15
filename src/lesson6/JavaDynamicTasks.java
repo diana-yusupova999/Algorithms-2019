@@ -22,15 +22,17 @@ public class JavaDynamicTasks {
      * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
      * При сравнении подстрок, регистр символов *имеет* значение.
      */
-    private static int[][]buildMatrix(String first, String second){
-        int[][] matrix = new int[first.length() + 1][second.length() + 1];
-        for(int i = 0; i<=first.length(); i++){
-            for (int j = 0; j<= second.length(); i++){
+    private static int[][] buildMatrix(String first, String second)  {
+        int length = first.length() + 1;
+        int height = second.length() + 1;
+        int[][] matrix = new int[length][height];
+        for (int i = 0; i < length; i++) {
+            for (int j = 0; j < height; j++) {
                 if ((i == 0) || (j == 0)) {
                     matrix[i][j] = 0;
                 } else {
-                    if (first.charAt(i - 1) == second.charAt(j - 1)){
-                        matrix[i][j] = matrix[i - 1][j - 1];
+                    if (first.charAt(i - 1) == second.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1] + 1;
                     } else {
                         matrix[i][j] = Math.max(matrix[i - 1][j], matrix[i][j - 1]);
                     }

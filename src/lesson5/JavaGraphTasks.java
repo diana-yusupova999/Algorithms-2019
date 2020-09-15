@@ -34,6 +34,9 @@ public class JavaGraphTasks {
      * связного графа ровно по одному разу
      */
     public static List<Graph.Edge> findEulerLoop(Graph graph) {
+        while(graph!=null){
+
+        }
         throw new NotImplementedError();
     }
 

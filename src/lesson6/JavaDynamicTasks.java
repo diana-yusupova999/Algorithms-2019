@@ -21,6 +21,8 @@ public class JavaDynamicTasks {
      * Если общей подпоследовательности нет, вернуть пустую строку.
      * Если есть несколько самых длинных общих подпоследовательностей, вернуть любую из них.
      * При сравнении подстрок, регистр символов *имеет* значение.
+     * Трудоёмкость О(M*N)
+     * Ресурсоёмкость О(M*N)
      */
     private static int[][] buildMatrix(String first, String second)  {
         int length = first.length() + 1;
@@ -72,6 +74,8 @@ public class JavaDynamicTasks {
      * Если самых длинных возрастающих подпоследовательностей несколько (как в примере),
      * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
      * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
+     * Трудоёмкость О(N^2)
+     * Ресурсоёмкость О(N)
      */
     public static List<Integer> longestIncreasingSubSequence(List<Integer> list) {
         if (list.size() == 0 || list.size() == 1){
@@ -120,6 +124,8 @@ public class JavaDynamicTasks {
      * Необходимо найти маршрут с минимальным весом и вернуть этот минимальный вес.
      *
      * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
+     * Трудоёмкость О(M*N)
+     * Ресурсоёмкость О(M*N)
      */
     private static int getIntegerValueByIndices(List<String> input, int i, int j) {
         return Integer.parseInt(input.get(i).split(" ")[j]);

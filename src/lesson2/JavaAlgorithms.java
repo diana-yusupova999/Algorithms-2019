@@ -2,20 +2,16 @@ package lesson2;
 
 import kotlin.Pair;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
@@ -265,11 +261,13 @@ public class JavaAlgorithms {
      * T(n*m)
      */
 
+
+
     static public Set<String> baldaSearcher(String inputName, Set<String> words) throws IOException {
         List<char[]> lines = new ArrayList<>();
         Map<Character, List<Point>> begins = new HashMap<>(100);
-
-        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName, StandardCharsets.UTF_8))) {
+        Path path = Paths.get(inputName);
+        try (BufferedReader scanner = Files.newBufferedReader(path)) {
             String line = scanner.readLine();
             while (line != null && !line.isEmpty()) {
                 lines.add(line.replaceAll(" ", "").toCharArray());

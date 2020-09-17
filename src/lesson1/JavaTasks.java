@@ -2,6 +2,7 @@ package lesson1;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -128,44 +129,39 @@ public class JavaTasks {
             }
         });
 
-        try (BufferedReader scanner = new BufferedReader(new FileReader(inputName))) { //расширение StandardCharsets.UTF_8 добавила, т.к. в файл output выводились иероглифы
-            String line = scanner.readLine();
-            while (line != null && !line.isEmpty()) {
+        List<String> lines = Files.readAllLines(new File(inputName).toPath(), StandardCharsets.UTF_8);
+        for (String line : lines) {
+            String[] words = line.split(" ");
 
-                String[] words = line.split(" ");
+            String address = words[3] + " " + words[4];
+            List<String> persons = map.getOrDefault(address, new ArrayList<>());
+            persons.add(words[0] + " " + words[1]);
+            map.put(address, persons);
 
-                String address = words[3] + " " + words[4];
-                List<String> persons = map.getOrDefault(address, new ArrayList<>());
-                persons.add(words[0] + " " + words[1]);
-                map.put(address, persons);
-
-                line = scanner.readLine();
-            }
         }
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Map.Entry<String, List<String >> entry:
+        map.entrySet()){
 
-        try (PrintWriter writer = new PrintWriter(new File(outputName), StandardCharsets.UTF_8)) {
-            for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+            String address = entry.getKey();
+            List<String> persons = entry.getValue();
 
-                String address = entry.getKey();
-                List<String> persons = entry.getValue();
+            Collections.sort(persons);
+            stringBuilder.append(address).append(" - ");
 
-                Collections.sort(persons);
-                writer.print(address + " - ");
-
-                Iterator<String> iterator = persons.iterator();
-                while (iterator.hasNext()) {
-                    String person = iterator.next();
-                    writer.print(person);
-                    if (iterator.hasNext()) {
-                        writer.print(", ");
-                    } else {
-                        writer.println();
-                    }
+            Iterator<String> iterator = persons.iterator();
+            while (iterator.hasNext()) {
+                String person = iterator.next();
+                stringBuilder.append(person);
+                if (iterator.hasNext()) {
+                    stringBuilder.append(", ");
+                } else {
+                    stringBuilder.append("\n");
                 }
             }
         }
+        Files.writeString(new File(outputName).toPath(), stringBuilder.toString(), StandardCharsets.UTF_8);
     }
-
     /**
      * Сортировка температур
      * <p>

@@ -1,11 +1,12 @@
 package lesson6;
 
-import kotlin.NotImplementedError;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -131,17 +132,12 @@ public class JavaDynamicTasks {
         return Integer.parseInt(input.get(i).split(" ")[j]);
     }
 
-    public static int shortestPathOnField(String inputName) throws IOException {
+    public static int shortestPathOnField(String inputName) throws IOException, URISyntaxException {
         String line;
-        List<String> input = new ArrayList<>();
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(inputName))){
-            while ((line = bufferedReader.readLine()) != null ){
-                input.add(line);
-            }
-        }
+        List<String> input = readDataFromFile(inputName);
         int length = input.get(0).split(" ").length;
         int height = input.size();
-        int[][] requiredWay = new int [height][length];
+        int[][] requiredWay = new int[height][length];
         requiredWay[0][0] = getIntegerValueByIndices(input, 0, 0);
         for (int i = 1; i < height; i++) {
             requiredWay[i][0] = getIntegerValueByIndices(input, i, 0) + requiredWay[i - 1][0];
@@ -156,5 +152,15 @@ public class JavaDynamicTasks {
             }
         }
         return requiredWay[height - 1][length - 1];
+    }
+
+    private static List<String> readDataFromFile(String src) {
+        try {
+            Path path = Paths.get(src);
+            return Files.readAllLines(path);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return Collections.emptyList();
     }
 }

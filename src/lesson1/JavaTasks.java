@@ -129,8 +129,8 @@ public class JavaTasks {
             }
         });
 
-        List<String> lines = Files.readAllLines(new File(inputName).toPath(), StandardCharsets.UTF_8);
-        for (String line : lines) {
+        List<String> inputLines = Files.readAllLines(new File(inputName).toPath(), StandardCharsets.UTF_8);
+        for (String line : inputLines) {
             String[] words = line.split(" ");
 
             String address = words[3] + " " + words[4];
@@ -139,9 +139,9 @@ public class JavaTasks {
             map.put(address, persons);
 
         }
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Map.Entry<String, List<String >> entry:
-        map.entrySet()){
+        List<String> outputLines = new ArrayList<>();
+        for (Map.Entry<String, List<String >> entry : map.entrySet()) {
+            StringBuilder stringBuilder = new StringBuilder();
 
             String address = entry.getKey();
             List<String> persons = entry.getValue();
@@ -156,11 +156,11 @@ public class JavaTasks {
                 if (iterator.hasNext()) {
                     stringBuilder.append(", ");
                 } else {
-                    stringBuilder.append("\n");
+                    outputLines.add(stringBuilder.toString());
                 }
             }
         }
-        Files.writeString(new File(outputName).toPath(), stringBuilder.toString(), StandardCharsets.UTF_8);
+        Files.write(new File(outputName).toPath(), outputLines, StandardCharsets.UTF_8);
     }
     /**
      * Сортировка температур
